@@ -1,0 +1,44 @@
+{
+  "_comment" : "This is a packer template to spin up ec2 and configure the instance",
+  "variables": {
+    "aws_access_key": "",
+    "aws_secret_key": ""
+  },
+  "builders": [{
+    "type": "amazon-ebs",
+    "access_key": "{{user `aws_access_key`}}",
+    "secret_key": "{{user `aws_secret_key`}}",
+    "region": "ap-southeast-2",
+    "source_ami": "",
+    "instance_type": "t2.micro",
+    "ssh_username": "ubuntu",
+    "security_group_id": "",
+    "ami_name": "lastlaravel Build-{{user `Build`}}"
+  }],
+    "provisioners": [
+  {
+    "type": "file",
+    "source": "/var/lib/jenkins/workspace/job3/job2.zip",
+    "destination": "/tmp/job2.zip"
+  },
+  {
+    "type": "shell",
+    "inline": [
+      "sudo cp /tmp/job2.zip /var/"
+
+    ]
+  },
+
+  {
+    "type": "chef-solo",
+    "cookbook_paths": ["/var/lib/jenkins/chef/chef-repo/cookbooks"],
+    "run_list": ["packer::default", "packer::config", "packer::mysql", "packer::laravel"]
+  }
+
+  ]
+
+
+}
+
+
+
